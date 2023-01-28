@@ -28,26 +28,24 @@ func Calculate[T constraints.Integer | constraints.Float](
 			averageValue += float64(value)
 			averageValueWeightedCount++
 		}
+	} else {
+		valuesClone := make([]T, valuesLen)
 
-		return averageValue / averageValueWeightedCount
-	}
+		copy(valuesClone, values)
 
-	valuesClone := make([]T, valuesLen)
+		slices.Sort(valuesClone)
 
-	copy(valuesClone, values)
+		valuesMidIndex := float64(valuesLen-1) / 2
+		weightingBase = math.Abs(weightingBase)
 
-	slices.Sort(valuesClone)
+		for i, value := range valuesClone {
+			midDistance := math.Abs(valuesMidIndex - float64(i))
+			midProximity := valuesMidIndex - midDistance
+			weighting := math.Pow(weightingBase, midProximity/valuesMidIndex)
 
-	valuesMidIndex := float64(valuesLen-1) / 2
-	weightingBase = math.Abs(weightingBase)
-
-	for i, value := range valuesClone {
-		midDistance := math.Abs(valuesMidIndex - float64(i))
-		midProximity := valuesMidIndex - midDistance
-		weighting := math.Pow(weightingBase, midProximity/valuesMidIndex)
-
-		averageValue += float64(value) * weighting
-		averageValueWeightedCount += weighting
+			averageValue += float64(value) * weighting
+			averageValueWeightedCount += weighting
+		}
 	}
 
 	return averageValue / averageValueWeightedCount
