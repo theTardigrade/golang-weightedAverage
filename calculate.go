@@ -10,6 +10,7 @@ import (
 func Calculate[T constraints.Integer | constraints.Float](
 	values []T,
 	weightingBase float64,
+	canReorderValues bool,
 ) float64 {
 	valuesLen := len(values)
 
@@ -29,16 +30,20 @@ func Calculate[T constraints.Integer | constraints.Float](
 			averageValueWeightedCount++
 		}
 	} else {
-		valuesClone := make([]T, valuesLen)
+		if !canReorderValues {
+			valuesClone := make([]T, valuesLen)
 
-		copy(valuesClone, values)
+			copy(valuesClone, values)
 
-		slices.Sort(valuesClone)
+			values = valuesClone
+		}
+
+		slices.Sort(values)
 
 		valuesMidIndex := float64(valuesLen-1) / 2
 		weightingBase = math.Abs(weightingBase)
 
-		for i, value := range valuesClone {
+		for i, value := range values {
 			midDistance := math.Abs(valuesMidIndex - float64(i))
 			midProximity := valuesMidIndex - midDistance
 			weighting := math.Pow(weightingBase, midProximity/valuesMidIndex)
