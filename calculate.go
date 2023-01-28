@@ -26,8 +26,9 @@ func Calculate[T Number](
 	if weightingBase == 1 {
 		for _, value := range values {
 			averageValue += float64(value)
-			averageValueWeightedCount++
 		}
+
+		averageValueWeightedCount = float64(valuesLen)
 	} else {
 		if !canReorderValues {
 			valuesClone := make([]T, valuesLen)
