@@ -3,11 +3,10 @@ package weightedAverage
 import (
 	"math"
 
-	"golang.org/x/exp/constraints"
 	"golang.org/x/exp/slices"
 )
 
-func Calculate[T constraints.Integer | constraints.Float](
+func Calculate[T Number](
 	values []T,
 	weightingBase float64,
 	canReorderValues bool,
