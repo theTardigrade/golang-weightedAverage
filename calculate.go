@@ -20,15 +20,28 @@ func Calculate[T constraints.Integer | constraints.Float](
 		return float64(values[0])
 	}
 
-	slices.Sort(values)
+	var averageValue float64
+	var averageValueWeightedCount float64
+
+	if weightingBase == 1 {
+		for _, value := range values {
+			averageValue += float64(value)
+			averageValueWeightedCount++
+		}
+
+		return averageValue / averageValueWeightedCount
+	}
+
+	valuesClone := make([]T, valuesLen)
+
+	copy(valuesClone, values)
+
+	slices.Sort(valuesClone)
 
 	valuesMidIndex := float64(valuesLen-1) / 2
 	weightingBase = math.Abs(weightingBase)
 
-	var averageValue float64
-	var averageValueWeightedCount float64
-
-	for i, value := range values {
+	for i, value := range valuesClone {
 		midDistance := math.Abs(valuesMidIndex - float64(i))
 		midProximity := valuesMidIndex - midDistance
 		weighting := math.Pow(weightingBase, midProximity/valuesMidIndex)
