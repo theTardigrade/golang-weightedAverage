@@ -8,8 +8,7 @@ import (
 
 func Calculate[T Number](
 	values []T,
-	weightingBase float64,
-	canReorderValues bool,
+	options *CalculateOptions,
 ) float64 {
 	valuesLen := len(values)
 
@@ -23,14 +22,18 @@ func Calculate[T Number](
 	var averageValue float64
 	var averageValueWeightedCount float64
 
-	if weightingBase == 1 {
+	if options == nil {
+		options = calculateOptionsWithDefaults
+	}
+
+	if weightingBase := math.Abs(options.WeightingBase); weightingBase == 1 {
 		for _, value := range values {
 			averageValue += float64(value)
 		}
 
 		averageValueWeightedCount = float64(valuesLen)
 	} else {
-		if !canReorderValues {
+		if !options.CanReorderValues {
 			valuesClone := make([]T, valuesLen)
 
 			copy(valuesClone, values)
@@ -41,7 +44,6 @@ func Calculate[T Number](
 		slices.Sort(values)
 
 		valuesMidIndex := float64(valuesLen-1) / 2
-		weightingBase = math.Abs(weightingBase)
 
 		for i, value := range values {
 			midDistance := math.Abs(valuesMidIndex - float64(i))
